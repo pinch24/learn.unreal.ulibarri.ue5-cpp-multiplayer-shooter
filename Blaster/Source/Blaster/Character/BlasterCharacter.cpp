@@ -2,7 +2,7 @@
 
 
 #include "BlasterCharacter.h"
-#include "Weapon.h"
+#include "../Weapon/Weapon.h"
 #include "Camera/CameraComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
