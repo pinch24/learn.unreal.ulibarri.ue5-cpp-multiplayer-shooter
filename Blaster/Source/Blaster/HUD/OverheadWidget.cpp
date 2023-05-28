@@ -32,8 +32,8 @@ void UOverheadWidget::ShowPlayerNetRole(APawn* InPawn)
 			Role = FString("Max");
 			break;
 	}
-	const FString RemoteRoleString = FString::Printf(TEXT("Remote Role: %s"), *Role);
-	SetDisplayText(RemoteRoleString);
+	//const FString RemoteRoleString = FString::Printf(TEXT("Remote Role: %s"), *Role);
+	//SetDisplayText(RemoteRoleString);
 }
 
 void UOverheadWidget::NativeDestruct()

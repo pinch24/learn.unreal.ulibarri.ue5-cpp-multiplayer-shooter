@@ -2,7 +2,7 @@
 
 
 #include "Weapon.h"
-#include "../Character/BlasterCharacter.h"
+#include "Blaster/Character/BlasterCharacter.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 
