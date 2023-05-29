@@ -112,6 +112,17 @@ void ABlasterCharacter::Equip()
 	}
 }
 
+void ABlasterCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
+{
+	if (OverlappingWeapon) {
+		OverlappingWeapon->ShowPickupWidget(true);
+	}
+
+	if (LastWeapon) {
+		LastWeapon->ShowPickupWidget(false);
+	}
+}
+
 void ABlasterCharacter::ServerEquipButtonPressed_Implementation()
 {
 	if (Combat) {
@@ -134,13 +145,7 @@ void ABlasterCharacter::SetOverlappingWeapon(AWeapon* Weapon)
 	}
 }
 
-void ABlasterCharacter::OnRep_OverlappingWeapon(AWeapon* LastWeapon)
+bool ABlasterCharacter::IsWeaponEquipped()
 {
-	if (OverlappingWeapon) {
-		OverlappingWeapon->ShowPickupWidget(true);
-	}
-
-	if (LastWeapon) {
-		LastWeapon->ShowPickupWidget(false);
-	}
+	return (Combat && Combat->EquippedWeapon);
 }
