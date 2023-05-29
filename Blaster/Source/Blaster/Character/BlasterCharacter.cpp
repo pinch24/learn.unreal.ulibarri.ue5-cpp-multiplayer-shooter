@@ -102,7 +102,19 @@ void ABlasterCharacter::LookUp(float Value)
 
 void ABlasterCharacter::Equip()
 {
-	if (Combat && HasAuthority()) {
+	if (Combat) {
+		if (HasAuthority()) {
+			Combat->EquipWeapon(OverlappingWeapon);
+		}
+		else {
+			ServerEquipButtonPressed();
+		}
+	}
+}
+
+void ABlasterCharacter::ServerEquipButtonPressed_Implementation()
+{
+	if (Combat) {
 		Combat->EquipWeapon(OverlappingWeapon);
 	}
 }
