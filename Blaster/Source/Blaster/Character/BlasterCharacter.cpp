@@ -70,9 +70,12 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAxis("Turn Right / Left", this, &ABlasterCharacter::Turn);
 	PlayerInputComponent->BindAxis("Look Up / Down", this, &ABlasterCharacter::LookUp);
 
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ABlasterCharacter::Jumping);
 	PlayerInputComponent->BindAction("Equip", IE_Pressed, this, &ABlasterCharacter::Equipping);
 	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &ABlasterCharacter::Crouching);
+
+	PlayerInputComponent->BindAction("Aim", IE_Pressed, this, &ABlasterCharacter::Aiming);
+	PlayerInputComponent->BindAction("Aim", IE_Released, this, &ABlasterCharacter::Unaiming);
 }
 
 void ABlasterCharacter::MoveForward(float Value)
@@ -103,6 +106,11 @@ void ABlasterCharacter::LookUp(float Value)
 	AddControllerPitchInput(Value);
 }
 
+void ABlasterCharacter::Jumping()
+{
+	Super::Jump();
+}
+
 void ABlasterCharacter::Equipping()
 {
 	if (Combat) {
@@ -122,6 +130,20 @@ void ABlasterCharacter::Crouching()
 	}
 	else {
 		Crouch();
+	}
+}
+
+void ABlasterCharacter::Aiming()
+{
+	if (Combat) {
+		Combat->SetAiming(true);
+	}
+}
+
+void ABlasterCharacter::Unaiming()
+{
+	if (Combat) {
+		Combat->SetAiming(false);
 	}
 }
 
@@ -158,7 +180,12 @@ void ABlasterCharacter::SetOverlappingWeapon(AWeapon* Weapon)
 	}
 }
 
-bool ABlasterCharacter::IsWeaponEquipped()
+bool ABlasterCharacter::IsWeaponEquipped() const
 {
 	return (Combat && Combat->EquippedWeapon);
+}
+
+bool ABlasterCharacter::IsAiming() const
+{
+	return (Combat && Combat->bAiming);
 }
