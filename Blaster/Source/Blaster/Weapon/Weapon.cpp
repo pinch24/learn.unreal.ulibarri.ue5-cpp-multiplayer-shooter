@@ -98,8 +98,3 @@ void AWeapon::SetWeaponState(EWeaponState State)
 			break;
 	}
 }
-
-USphereComponent* AWeapon::GetAreaSphere() const
-{
-	return AreaSphere;
-}
