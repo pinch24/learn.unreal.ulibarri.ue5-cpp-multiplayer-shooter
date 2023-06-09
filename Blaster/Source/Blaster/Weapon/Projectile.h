@@ -11,11 +11,12 @@ class BLASTER_API AProjectile : public AActor
 	
 public:	
 	AProjectile();
-
+	virtual void Tick(float DeltaTime) override;
+	
 protected:
 	virtual void BeginPlay() override;
 
-public:	
-	virtual void Tick(float DeltaTime) override;
-
+private:
+	UPROPERTY(EditAnywhere)
+	class UBoxComponent* CollisionBox;
 };
