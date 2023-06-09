@@ -35,6 +35,7 @@ ABlasterCharacter::ABlasterCharacter()
 	Combat->SetIsReplicated(true);
 
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
+	GetCharacterMovement()->RotationRate = FRotator(0.f, 0.f, 850.f);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECR_Ignore);
 
@@ -119,7 +120,12 @@ void ABlasterCharacter::LookUp(float Value)
 
 void ABlasterCharacter::Jumping()
 {
-	Super::Jump();
+	if (bIsCrouched) {
+		UnCrouch();
+	}
+	else {
+		Super::Jump();
+	}
 }
 
 void ABlasterCharacter::Equipping()
