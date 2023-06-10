@@ -58,6 +58,23 @@ void ABlasterCharacter::PostInitializeComponents()
 	}
 }
 
+void ABlasterCharacter::PlayFireMontage(bool bAiming)
+{
+	if (Combat == nullptr)
+		return;
+
+	if (Combat->EquippedWeapon == nullptr)
+		return;
+	
+	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance()) {
+		if (FireWeaponMontage) {
+			AnimInstance->Montage_Play(FireWeaponMontage);
+			const FName SectionName = bAiming ? FName("RifleAim") : FName("RifleHip");
+			AnimInstance->Montage_JumpToSection(SectionName);
+		}
+	}
+}
+
 void ABlasterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
