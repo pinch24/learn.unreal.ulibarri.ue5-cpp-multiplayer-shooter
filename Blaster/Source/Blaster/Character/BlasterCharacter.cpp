@@ -83,8 +83,11 @@ void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction("Equip", IE_Pressed, this, &ABlasterCharacter::Equipping);
 	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &ABlasterCharacter::Crouching);
 
-	PlayerInputComponent->BindAction("Aim", IE_Pressed, this, &ABlasterCharacter::Aiming);
-	PlayerInputComponent->BindAction("Aim", IE_Released, this, &ABlasterCharacter::Unaiming);
+	PlayerInputComponent->BindAction("Aim", IE_Pressed, this, &ABlasterCharacter::AimOn);
+	PlayerInputComponent->BindAction("Aim", IE_Released, this, &ABlasterCharacter::AimOff);
+
+	PlayerInputComponent->BindAction("Fire", IE_Pressed, this, &ABlasterCharacter::FireOn);
+	PlayerInputComponent->BindAction("Fire", IE_Released, this, &ABlasterCharacter::FireOff);
 }
 
 void ABlasterCharacter::MoveForward(float Value)
@@ -147,14 +150,14 @@ void ABlasterCharacter::Crouching()
 	}
 }
 
-void ABlasterCharacter::Aiming()
+void ABlasterCharacter::AimOn()
 {
 	if (Combat) {
 		Combat->SetAiming(true);
 	}
 }
 
-void ABlasterCharacter::Unaiming()
+void ABlasterCharacter::AimOff()
 {
 	if (Combat) {
 		Combat->SetAiming(false);
@@ -195,6 +198,20 @@ void ABlasterCharacter::AimOffset(float DeltaTime)
 		FVector2D InRange(270.f, 360.f);
 		FVector2D OutRange(-90.f, 0.f);
 		AO_Pitch = FMath::GetMappedRangeValueClamped(InRange, OutRange, AO_Pitch);
+	}
+}
+
+void ABlasterCharacter::FireOn()
+{
+	if (Combat) {
+		Combat->Fire(true);
+	}
+}
+
+void ABlasterCharacter::FireOff()
+{
+	if (Combat) {
+		Combat->Fire(false);
 	}
 }
 

@@ -24,13 +24,17 @@ protected:
 	void MoveRight(float Value);
 	void Turn(float Value);
 	void LookUp(float Value);
+	
 	void Jumping();
 	void Equipping();
 	void Crouching();
-	void Aiming();
-	void Unaiming();
-
+	
+	void AimOn();
+	void AimOff();
 	void AimOffset(float DeltaTime);
+
+	void FireOn();
+	void FireOff();
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
