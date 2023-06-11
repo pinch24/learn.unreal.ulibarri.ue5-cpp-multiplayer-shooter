@@ -54,8 +54,12 @@ void UCombatComponent::Fire(bool bPressed)
 {
 	bFiring = bPressed;
 
+	if (EquippedWeapon == nullptr)
+		return;
+
 	if (Character && bFiring) {
 		Character->PlayFireMontage(bAiming);
+		EquippedWeapon->Fire();
 	}
 }
 
