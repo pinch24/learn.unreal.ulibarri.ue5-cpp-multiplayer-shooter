@@ -79,13 +79,12 @@ void UCombatComponent::MulticastFire_Implementation()
 
 	if (Character) {
 		Character->PlayFireMontage(bAiming);
-		EquippedWeapon->Fire();
+		EquippedWeapon->Fire(HitTarget);
 	}
 }
 
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	UE_LOG(LogTemp, Warning, TEXT("UCombatComponent::TickComponent:"));
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	FHitResult HitResult;
@@ -119,8 +118,10 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 
 		if (TraceHitResult.bBlockingHit == false) {
 			TraceHitResult.ImpactPoint = End;
+			HitTarget = End;
 		}
 		else {
+			HitTarget = TraceHitResult.ImpactPoint;
 			DrawDebugSphere(
 				GetWorld(),
 				TraceHitResult.ImpactPoint,
