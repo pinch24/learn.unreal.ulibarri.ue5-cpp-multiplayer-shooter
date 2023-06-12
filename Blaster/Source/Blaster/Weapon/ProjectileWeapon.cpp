@@ -22,14 +22,12 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 			SpawnParams.Owner = GetOwner();
 			SpawnParams.Instigator = InstigatorPawn;
 			
-			UWorld* World = GetWorld();
-			if (World) {
+			if (UWorld* World = GetWorld()) {
 				World->SpawnActor<AProjectile>(
 					ProjectileClass,
 					SocketTransform.GetLocation(),
 					TargetRotation,
-					SpawnParams
-					);
+					SpawnParams);
 			}
 		}
 	}
