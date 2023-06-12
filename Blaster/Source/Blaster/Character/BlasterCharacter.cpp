@@ -85,6 +85,13 @@ void ABlasterCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	AimOffset(DeltaTime);
+
+	// Instead of Combat->TickComponent() //
+	// CombatComponent::TickComponent not working.
+	if (Combat) {
+		FHitResult HitResult;
+		Combat->TraceUnderCrosshairs(HitResult);
+	}
 }
 
 void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
