@@ -94,6 +94,9 @@ void ABlasterCharacter::Tick(float DeltaTime)
 			FHitResult HitResult;
 			Combat->TraceUnderCrosshairs(HitResult);
 			Combat->HitTarget = HitResult.ImpactPoint;
+
+			Combat->SetHUDCrosshairs(DeltaTime);
+			Combat->InterpFOV(DeltaTime);
 		}
 	}
 }
