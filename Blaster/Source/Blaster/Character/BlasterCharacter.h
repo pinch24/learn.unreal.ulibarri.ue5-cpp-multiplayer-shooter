@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -14,10 +12,13 @@ class BLASTER_API ABlasterCharacter : public ACharacter
 
 public:
 	ABlasterCharacter();
+	
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PostInitializeComponents() override;
+
+	void PlayFireMontage(bool bAiming); 
 	
 protected:
 	virtual void BeginPlay() override;
@@ -26,13 +27,17 @@ protected:
 	void MoveRight(float Value);
 	void Turn(float Value);
 	void LookUp(float Value);
+	
 	void Jumping();
 	void Equipping();
 	void Crouching();
-	void Aiming();
-	void Unaiming();
-
+	
+	void AimOn();
+	void AimOff();
 	void AimOffset(float DeltaTime);
+
+	void FireOn();
+	void FireOff();
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -63,6 +68,9 @@ private:
 
 	ETurningInPlace TurningInPlace;
 	void TurnInPlace(float DeltaTime);
+
+	UPROPERTY(EditAnywhere, Category = Combat)
+	class UAnimMontage* FireWeaponMontage;
 
 public:
 	void SetOverlappingWeapon(AWeapon* Weapon);
