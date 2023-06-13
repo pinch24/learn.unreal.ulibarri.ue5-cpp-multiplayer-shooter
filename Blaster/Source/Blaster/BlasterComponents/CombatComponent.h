@@ -61,4 +61,10 @@ private:
 	float AimWalkSpeed;
 
 	bool bFiring;
+
+	/*
+	 * HUD and Crosshairs
+	 */
+	float CrosshairVelocityFactor;
+	float CrosshairInAirFactor;
 };
