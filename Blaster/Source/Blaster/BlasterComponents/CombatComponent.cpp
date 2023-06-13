@@ -20,7 +20,17 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	/* TickComponent() Not Working
+	 *
+	 */
+	UE_LOG(LogTemp, Warning, TEXT("CombatComponent::TickComponent()"));
 	SetHUDCrosshairs(DeltaTime);
+	
+	if (Character && Character->IsLocallyControlled()) {
+		FHitResult HitResult;
+		TraceUnderCrosshairs(HitResult);
+		HitTarget = HitResult.ImpactPoint;
+	}
 }
 
 void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

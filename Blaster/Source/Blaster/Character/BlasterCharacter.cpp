@@ -90,6 +90,11 @@ void ABlasterCharacter::Tick(float DeltaTime)
 	// CombatComponent::TickComponent not working.
 	if (Combat) {
 		Combat->SetHUDCrosshairs(DeltaTime);
+		if (Combat->Character && Combat->Character->IsLocallyControlled()) {
+			FHitResult HitResult;
+			Combat->TraceUnderCrosshairs(HitResult);
+			Combat->HitTarget = HitResult.ImpactPoint;
+		}
 	}
 }
 
@@ -305,4 +310,12 @@ AWeapon* ABlasterCharacter::GetEquippedWeapon()
 		return nullptr;
 
 	return Combat->EquippedWeapon;
+}
+
+FVector ABlasterCharacter::GetHitTarget() const
+{
+	if (Combat == nullptr)
+		return FVector();
+
+	return Combat->HitTarget;
 }
