@@ -35,6 +35,7 @@ ABlasterCharacter::ABlasterCharacter()
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 0.f, 850.f);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECR_Block);
 
 	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 
@@ -88,17 +89,17 @@ void ABlasterCharacter::Tick(float DeltaTime)
 
 	// Instead of Combat->TickComponent() //
 	// CombatComponent::TickComponent not working.
-	if (Combat) {
-		Combat->SetHUDCrosshairs(DeltaTime);
-		if (Combat->Character && Combat->Character->IsLocallyControlled()) {
-			FHitResult HitResult;
-			Combat->TraceUnderCrosshairs(HitResult);
-			Combat->HitTarget = HitResult.ImpactPoint;
-
-			Combat->SetHUDCrosshairs(DeltaTime);
-			Combat->InterpFOV(DeltaTime);
-		}
-	}
+	// if (Combat) {
+	// 	Combat->SetHUDCrosshairs(DeltaTime);
+	// 	if (Combat->Character && Combat->Character->IsLocallyControlled()) {
+	// 		FHitResult HitResult;
+	// 		Combat->TraceUnderCrosshairs(HitResult);
+	// 		Combat->HitTarget = HitResult.ImpactPoint;
+	//
+	// 		Combat->SetHUDCrosshairs(DeltaTime);
+	// 		Combat->InterpFOV(DeltaTime);
+	// 	}
+	// }
 }
 
 void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

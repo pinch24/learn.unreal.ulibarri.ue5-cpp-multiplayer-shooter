@@ -1,7 +1,6 @@
 #include "CombatComponent.h"
 #include "Blaster/Weapon/Weapon.h"
 #include "Blaster/Character/BlasterCharacter.h"
-#include "Blaster/HUD/BlasterHUD.h"
 #include "Blaster/PlayerController/BlasterPlayerController.h"
 #include "Camera/CameraComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
@@ -24,15 +23,15 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	/* TickComponent() Not Working
 	 *
 	 */
-	// if (Character && Character->IsLocallyControlled()) {
-	// 	FHitResult HitResult;
-	// 	TraceUnderCrosshairs(HitResult);
-	// 	HitTarget = HitResult.ImpactPoint;
-	//
-	// 	SetHUDCrosshairs(DeltaTime);
-	// 	InterpFOV(DeltaTime);
-	// }
-	UE_LOG(LogTemp, Warning, TEXT("CombatComponent::TickComponent()"));
+	// UE_LOG(LogTemp, Warning, TEXT("CombatComponent::TickComponent()"));
+	if (Character && Character->IsLocallyControlled()) {
+		FHitResult HitResult;
+		TraceUnderCrosshairs(HitResult);
+		HitTarget = HitResult.ImpactPoint;
+	
+		SetHUDCrosshairs(DeltaTime);
+		InterpFOV(DeltaTime);
+	}
 }
 
 void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -139,6 +138,13 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 			Start,
 			End,
 			ECC_Visibility);
+
+		if (TraceHitResult.GetActor() && TraceHitResult.GetActor()->Implements<UInteractWithCrosshairsInterface>()) {
+			HUDPackage.CrosshairsColor = FLinearColor::Red;
+		}
+		else {
+			HUDPackage.CrosshairsColor = FLinearColor::White;
+		}
 	}
 }
 
@@ -155,7 +161,6 @@ void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
 	if (Controller) {
 		HUD = HUD == nullptr ? Cast<ABlasterHUD>(Controller->GetHUD()) : HUD;
 		if (HUD) {
-			FHUDPackage HUDPackage;
 			if (EquippedWeapon) {
 				HUDPackage.CrosshairCenter = EquippedWeapon->CrosshairsCenter;
 				HUDPackage.CrosshairLeft = EquippedWeapon->CrosshairsLeft;
