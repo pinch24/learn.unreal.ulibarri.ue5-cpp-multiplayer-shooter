@@ -23,15 +23,15 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	/* TickComponent() Not Working
 	 *
 	 */
-	// if (Character && Character->IsLocallyControlled()) {
-	// 	FHitResult HitResult;
-	// 	TraceUnderCrosshairs(HitResult);
-	// 	HitTarget = HitResult.ImpactPoint;
-	//
-	// 	SetHUDCrosshairs(DeltaTime);
-	// 	InterpFOV(DeltaTime);
-	// }
-	UE_LOG(LogTemp, Warning, TEXT("CombatComponent::TickComponent()"));
+	// UE_LOG(LogTemp, Warning, TEXT("CombatComponent::TickComponent()"));
+	if (Character && Character->IsLocallyControlled()) {
+		FHitResult HitResult;
+		TraceUnderCrosshairs(HitResult);
+		HitTarget = HitResult.ImpactPoint;
+	
+		SetHUDCrosshairs(DeltaTime);
+		InterpFOV(DeltaTime);
+	}
 }
 
 void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

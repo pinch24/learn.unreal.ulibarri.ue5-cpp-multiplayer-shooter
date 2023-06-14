@@ -89,17 +89,17 @@ void ABlasterCharacter::Tick(float DeltaTime)
 
 	// Instead of Combat->TickComponent() //
 	// CombatComponent::TickComponent not working.
-	if (Combat) {
-		Combat->SetHUDCrosshairs(DeltaTime);
-		if (Combat->Character && Combat->Character->IsLocallyControlled()) {
-			FHitResult HitResult;
-			Combat->TraceUnderCrosshairs(HitResult);
-			Combat->HitTarget = HitResult.ImpactPoint;
-
-			Combat->SetHUDCrosshairs(DeltaTime);
-			Combat->InterpFOV(DeltaTime);
-		}
-	}
+	// if (Combat) {
+	// 	Combat->SetHUDCrosshairs(DeltaTime);
+	// 	if (Combat->Character && Combat->Character->IsLocallyControlled()) {
+	// 		FHitResult HitResult;
+	// 		Combat->TraceUnderCrosshairs(HitResult);
+	// 		Combat->HitTarget = HitResult.ImpactPoint;
+	//
+	// 		Combat->SetHUDCrosshairs(DeltaTime);
+	// 		Combat->InterpFOV(DeltaTime);
+	// 	}
+	// }
 }
 
 void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
