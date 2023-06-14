@@ -7,6 +7,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "TimerManager.h"
 
 UCombatComponent::UCombatComponent()
 {
@@ -14,24 +15,6 @@ UCombatComponent::UCombatComponent()
 
 	BaseWalkSpeed = 600.f;
 	AimWalkSpeed = 400.f;
-}
-
-void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	/* TickComponent() Not Working
-	 *
-	 */
-	UE_LOG(LogTemp, Warning, TEXT("CombatComponent::TickComponent()"));
-	// if (Character && Character->IsLocallyControlled()) {
-	// 	FHitResult HitResult;
-	// 	TraceUnderCrosshairs(HitResult);
-	// 	HitTarget = HitResult.ImpactPoint;
-	//
-	// 	SetHUDCrosshairs(DeltaTime);
-	// 	InterpFOV(DeltaTime);
-	// }
 }
 
 void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -56,31 +39,22 @@ void UCombatComponent::BeginPlay()
 	}
 }
 
-void UCombatComponent::SetAiming(bool bIsAiming)
+void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	bAiming = bIsAiming;
-	ServerSetAiming(bIsAiming);
-	
-	if (Character) {
-		Character->GetCharacterMovement()->MaxWalkSpeed = bIsAiming ? AimWalkSpeed : BaseWalkSpeed;
-	}
-}
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-void UCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)
-{
-	bAiming = bIsAiming;
-	
-	if (Character) {
-		Character->GetCharacterMovement()->MaxWalkSpeed = bIsAiming ? AimWalkSpeed : BaseWalkSpeed;
-	}
-}
-
-void UCombatComponent::OnRep_EquippedWeapon()
-{
-	if (EquippedWeapon && Character) {
-		Character->GetCharacterMovement()->bOrientRotationToMovement = false;
-		Character->bUseControllerRotationYaw = true;
-	}
+	/* TickComponent() Not Working
+	 *
+	 */
+	UE_LOG(LogTemp, Warning, TEXT("CombatComponent::TickComponent()"));
+	// if (Character && Character->IsLocallyControlled()) {
+	// 	FHitResult HitResult;
+	// 	TraceUnderCrosshairs(HitResult);
+	// 	HitTarget = HitResult.ImpactPoint;
+	//
+	// 	SetHUDCrosshairs(DeltaTime);
+	// 	InterpFOV(DeltaTime);
+	// }
 }
 
 void UCombatComponent::Fire(bool bPressed)
@@ -88,13 +62,46 @@ void UCombatComponent::Fire(bool bPressed)
 	bFiring = bPressed;
 
 	if (bFiring) {
-		FHitResult HitResult;
-		TraceUnderCrosshairs(HitResult);
-		ServerFire(HitResult.ImpactPoint);
+		Firing();
+	}
+}
+
+void UCombatComponent::Firing()
+{
+	if (bCanFire && EquippedWeapon) {
+		bCanFire = false;
+		
+		ServerFire(HitTarget);
 
 		if (EquippedWeapon) {
 			CrosshairShootingFactor += .75f;
 		}
+
+		StartFireTimer();
+	}
+}
+
+void UCombatComponent::StartFireTimer()
+{
+	if (EquippedWeapon == nullptr || Character == nullptr)
+		return;
+	
+	Character->GetWorldTimerManager().SetTimer(
+		FireTimer,
+		this,
+		&UCombatComponent::FireTimerFinished,
+		EquippedWeapon->FireDelay);
+}
+
+void UCombatComponent::FireTimerFinished()
+{
+	if (EquippedWeapon == nullptr)
+		return;
+	
+	bCanFire = true;
+	
+	if (bFiring && EquippedWeapon->bAutomatic) {
+		Firing();
 	}
 }
 
@@ -111,6 +118,32 @@ void UCombatComponent::MulticastFire_Implementation(const FVector_NetQuantize& T
 	if (Character) {
 		Character->PlayFireMontage(bAiming);
 		EquippedWeapon->Fire(TraceHitTarget);
+	}
+}
+
+void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
+{
+	if (Character == nullptr || WeaponToEquip == nullptr)
+		return;
+
+	EquippedWeapon = WeaponToEquip;
+	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
+
+	const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("hand_rSocket"));
+	if (HandSocket) {
+		HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
+	}
+	EquippedWeapon->SetOwner(Character);
+
+	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
+	Character->bUseControllerRotationYaw = true;
+}
+
+void UCombatComponent::OnRep_EquippedWeapon()
+{
+	if (EquippedWeapon && Character) {
+		Character->GetCharacterMovement()->bOrientRotationToMovement = false;
+		Character->bUseControllerRotationYaw = true;
 	}
 }
 
@@ -213,24 +246,6 @@ void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
 	}
 }
 
-void UCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
-{
-	if (Character == nullptr || WeaponToEquip == nullptr)
-		return;
-
-	EquippedWeapon = WeaponToEquip;
-	EquippedWeapon->SetWeaponState(EWeaponState::EWS_Equipped);
-
-	const USkeletalMeshSocket* HandSocket = Character->GetMesh()->GetSocketByName(FName("hand_rSocket"));
-	if (HandSocket) {
-		HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
-	}
-	EquippedWeapon->SetOwner(Character);
-
-	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
-	Character->bUseControllerRotationYaw = true;
-}
-
 void UCombatComponent::InterpFOV(float DeltaTime)
 {
 	if (EquippedWeapon == nullptr)
@@ -245,5 +260,24 @@ void UCombatComponent::InterpFOV(float DeltaTime)
 
 	if (Character && Character->GetFollowCamera()) {
 		Character->GetFollowCamera()->SetFieldOfView(CurrentFOV);
+	}
+}
+
+void UCombatComponent::SetAiming(bool bIsAiming)
+{
+	bAiming = bIsAiming;
+	ServerSetAiming(bIsAiming);
+	
+	if (Character) {
+		Character->GetCharacterMovement()->MaxWalkSpeed = bIsAiming ? AimWalkSpeed : BaseWalkSpeed;
+	}
+}
+
+void UCombatComponent::ServerSetAiming_Implementation(bool bIsAiming)
+{
+	bAiming = bIsAiming;
+	
+	if (Character) {
+		Character->GetCharacterMovement()->MaxWalkSpeed = bIsAiming ? AimWalkSpeed : BaseWalkSpeed;
 	}
 }
