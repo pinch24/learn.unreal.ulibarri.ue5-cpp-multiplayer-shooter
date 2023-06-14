@@ -35,6 +35,7 @@ ABlasterCharacter::ABlasterCharacter()
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 0.f, 850.f);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECR_Block);
 
 	TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 
