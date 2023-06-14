@@ -23,15 +23,15 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	/* TickComponent() Not Working
 	 *
 	 */
-	// UE_LOG(LogTemp, Warning, TEXT("CombatComponent::TickComponent()"));
-	if (Character && Character->IsLocallyControlled()) {
-		FHitResult HitResult;
-		TraceUnderCrosshairs(HitResult);
-		HitTarget = HitResult.ImpactPoint;
-	
-		SetHUDCrosshairs(DeltaTime);
-		InterpFOV(DeltaTime);
-	}
+	UE_LOG(LogTemp, Warning, TEXT("CombatComponent::TickComponent()"));
+	// if (Character && Character->IsLocallyControlled()) {
+	// 	FHitResult HitResult;
+	// 	TraceUnderCrosshairs(HitResult);
+	// 	HitTarget = HitResult.ImpactPoint;
+	//
+	// 	SetHUDCrosshairs(DeltaTime);
+	// 	InterpFOV(DeltaTime);
+	// }
 }
 
 void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -132,6 +132,11 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 
 	if (bScreenToWorld) {
 		FVector Start = CrosshairWorldPosition;
+
+		if (Character) {
+			float DistanceToCharacter = (Character->GetActorLocation() - Start).Size();
+			Start += CrosshairWorldDirection * (DistanceToCharacter + 100.f);
+		}
 		FVector End = Start + CrosshairWorldDirection * TRACE_LENGTH;
 		GetWorld()->LineTraceSingleByChannel(
 			TraceHitResult,

@@ -23,7 +23,7 @@ ABlasterCharacter::ABlasterCharacter()
 	FollowCamera->bUsePawnControlRotation = false;
 
 	bUseControllerRotationYaw = false;
-	GetCharacterMovement()->bOrientRotationToMovement = true;
+	GetCharacterMovement()->bOrientRotationToMovement = false;
 
 	OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidget"));
 	OverheadWidget->SetupAttachment(RootComponent);
@@ -86,20 +86,21 @@ void ABlasterCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	AimOffset(DeltaTime);
+	HideCameraIfCharacterClose();
 
 	// Instead of Combat->TickComponent() //
 	// CombatComponent::TickComponent not working.
-	// if (Combat) {
-	// 	Combat->SetHUDCrosshairs(DeltaTime);
-	// 	if (Combat->Character && Combat->Character->IsLocallyControlled()) {
-	// 		FHitResult HitResult;
-	// 		Combat->TraceUnderCrosshairs(HitResult);
-	// 		Combat->HitTarget = HitResult.ImpactPoint;
-	//
-	// 		Combat->SetHUDCrosshairs(DeltaTime);
-	// 		Combat->InterpFOV(DeltaTime);
-	// 	}
-	// }
+	if (Combat) {
+		Combat->SetHUDCrosshairs(DeltaTime);
+		if (Combat->Character && Combat->Character->IsLocallyControlled()) {
+			FHitResult HitResult;
+			Combat->TraceUnderCrosshairs(HitResult);
+			Combat->HitTarget = HitResult.ImpactPoint;
+	
+			Combat->SetHUDCrosshairs(DeltaTime);
+			Combat->InterpFOV(DeltaTime);
+		}
+	}
 }
 
 void ABlasterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -279,6 +280,25 @@ void ABlasterCharacter::TurnInPlace(float DeltaTime)
 		if (FMath::Abs(AO_Yaw) < 15.f) {
 			TurningInPlace = ETurningInPlace::ETIP_NotTurning;
 			StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
+		}
+	}
+}
+
+void ABlasterCharacter::HideCameraIfCharacterClose()
+{
+	if (IsLocallyControlled() == false)
+		return;
+
+	if ((FollowCamera->GetComponentLocation() - GetActorLocation()).Size() < CameraThreshold) {
+		GetMesh()->SetVisibility(false);
+		if (Combat && Combat->EquippedWeapon && Combat->EquippedWeapon->GetWeaponMesh()) {
+			Combat->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = true;
+		}
+	}
+	else {
+		GetMesh()->SetVisibility(true);
+		if (Combat && Combat->EquippedWeapon && Combat->EquippedWeapon->GetWeaponMesh()) {
+			Combat->EquippedWeapon->GetWeaponMesh()->bOwnerNoSee = false;
 		}
 	}
 }
