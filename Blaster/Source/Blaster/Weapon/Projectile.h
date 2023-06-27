@@ -16,6 +16,9 @@ public:
 	virtual void Destroyed() override;
 	
 protected:
+	UPROPERTY(EditAnywhere)
+	float Damage = 20.f;
+	
 	virtual void BeginPlay() override;
 
 	UFUNCTION()

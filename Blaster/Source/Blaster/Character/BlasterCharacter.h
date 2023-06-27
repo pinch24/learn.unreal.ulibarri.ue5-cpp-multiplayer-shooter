@@ -21,11 +21,8 @@ public:
 
 	void PlayFireMontage(bool bAiming);
 	
-	UFUNCTION(NetMulticast, Unreliable)
-	void MulticastHit();
-
 	virtual void OnRep_ReplicatedMovement() override;
-	
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -47,7 +44,11 @@ protected:
 
 	void FireOn();
 	void FireOff();
-	
+
+	UFUNCTION()
+	void ReceiveDamage(AActor* DamageActor, float Damage, const UDamageType* DamageType, class AController* InstigatorController, AActor* DamageCauser);
+	void UpdateHUDHealth();
+
 	void PlayHitReactMontage();
 
 private:
