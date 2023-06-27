@@ -2,6 +2,7 @@
 #include "Blaster/Blaster.h"
 #include "Blaster/Weapon/Weapon.h"
 #include "Blaster/BlasterComponents/CombatComponent.h"
+#include "Blaster/PlayerController/BlasterPlayerController.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
@@ -107,6 +108,11 @@ void ABlasterCharacter::OnRep_ReplicatedMovement()
 void ABlasterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	BlasterPlayerController = Cast<ABlasterPlayerController>(Controller);
+	if (BlasterPlayerController) {
+		BlasterPlayerController->SetHUDHealth(Health, MaxHealth);
+	}
 }
 
 void ABlasterCharacter::Tick(float DeltaTime)
