@@ -9,4 +9,11 @@ class BLASTER_API ABlasterPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 	
+	class ABlasterHUD* BlasterHUD;
+	
+protected:
+	virtual void BeginPlay() override;
+
+public:
+	void SetHUDHealth(float Health, float MaxHealth);
 };
