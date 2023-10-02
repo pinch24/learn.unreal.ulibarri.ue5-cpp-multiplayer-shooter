@@ -2,6 +2,7 @@
 #include "Blaster/Blaster.h"
 #include "Blaster/Weapon/Weapon.h"
 #include "Blaster/BlasterComponents/CombatComponent.h"
+#include "Blaster/GameMode/BlasterGameMode.h"
 #include "Blaster/PlayerController/BlasterPlayerController.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -102,8 +103,15 @@ void ABlasterCharacter::ReceiveDamage(AActor* DamageActor, float Damage, const U
 {
 	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
 	UpdateHUDHealth();
-	
 	PlayHitReactMontage();
+
+	if (Health == 0.f) {
+		if (ABlasterGameMode* BlasterGameMode = GetWorld()->GetAuthGameMode<ABlasterGameMode>()) {
+			BlasterPlayerController = BlasterPlayerController == nullptr ? Cast<ABlasterPlayerController>(Controller) : BlasterPlayerController;
+			ABlasterPlayerController* AttackerController = Cast<ABlasterPlayerController>(InstigatorController);
+			BlasterGameMode->PlayerEliminated(this, BlasterPlayerController, AttackerController);
+		}
+	}
 }
 
 void ABlasterCharacter::UpdateHUDHealth()
@@ -120,6 +128,11 @@ void ABlasterCharacter::OnRep_ReplicatedMovement()
 
 	SimProxiesTurn();
 	TimeSinceLastMovementReplication = 0.f;
+}
+
+void ABlasterCharacter::Elim()
+{
+	// ...
 }
 
 void ABlasterCharacter::BeginPlay()
